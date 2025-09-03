@@ -135,6 +135,17 @@
             transform: translateY(-1px);
         }
 
+        .estimation-note {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: #475569;
+            line-height: 1.5;
+        }
+
         .result-card {
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(10px);
@@ -316,16 +327,6 @@
                 </div>
 
                 <div class="input-group">
-                    <label for="benefits">Benefits & Taxes (% of salary)</label>
-                    <input type="number" id="benefits" value="30" oninput="calculate()">
-                </div>
-
-                <div class="input-group">
-                    <label for="screening-hours">Hours/week on candidate screening</label>
-                    <input type="number" id="screening-hours" value="25" oninput="calculate()">
-                </div>
-
-                <div class="input-group">
                     <label for="training">Training cost for new recruiter ($)</label>
                     <input type="number" id="training" value="3000" oninput="calculate()">
                 </div>
@@ -336,13 +337,17 @@
                 </div>
 
                 <div class="input-group">
-                    <label for="ai-build">AI Solution Build Cost ($)</label>
+                    <label for="ai-build">AI Solution Build Cost* ($)</label>
                     <input type="number" id="ai-build" value="2500" oninput="calculate()">
                 </div>
 
                 <div class="input-group">
-                    <label for="ai-maintenance">AI Monthly Maintenance ($)</label>
+                    <label for="ai-maintenance">AI Monthly Maintenance* ($)</label>
                     <input type="number" id="ai-maintenance" value="200" oninput="calculate()">
+                </div>
+
+                <div class="estimation-note">
+                    *This is an estimation based on the average AI Solution Build Cost. AI Monthly Maintenance is estimated at 10% of the project build cost.
                 </div>
             </div>
 
@@ -353,13 +358,6 @@
                     <div class="result-label">Total Employee Cost (Annual)</div>
                     <div class="result-value" id="total-employee-cost">
                         💰 $58,500
-                    </div>
-                </div>
-
-                <div class="result-card">
-                    <div class="result-label">Cost for Screening Tasks Only</div>
-                    <div class="result-value" id="screening-cost">
-                        📋 $36,562
                     </div>
                 </div>
 
@@ -384,12 +382,12 @@
                     <h4 style="color: #374151; margin-bottom: 15px; text-align: center;">3-Year Cost Comparison</h4>
                     <div class="bar-chart">
                         <div class="bar">
-                            <div class="bar-fill employee-bar" id="employee-bar"></div>
+                            <div class="bar-fill employee-bar" id="employee-bar" style="height: 150px;"></div>
                             <div class="bar-label">Employee Cost</div>
                             <div class="bar-value" id="employee-3year">$109,687</div>
                         </div>
                         <div class="bar">
-                            <div class="bar-fill ai-bar" id="ai-bar"></div>
+                            <div class="bar-fill ai-bar" id="ai-bar" style="height: 15px;"></div>
                             <div class="bar-label">AI Solution</div>
                             <div class="bar-value" id="ai-3year">$9,700</div>
                         </div>
@@ -413,29 +411,29 @@
         function calculate() {
             // Get input values
             const salary = parseFloat(document.getElementById('salary').value) || 0;
-            const benefits = parseFloat(document.getElementById('benefits').value) || 0;
-            const screeningHours = parseFloat(document.getElementById('screening-hours').value) || 0;
             const training = parseFloat(document.getElementById('training').value) || 0;
             const recruitment = parseFloat(document.getElementById('recruitment').value) || 0;
             const aiBuild = parseFloat(document.getElementById('ai-build').value) || 0;
             const aiMaintenance = parseFloat(document.getElementById('ai-maintenance').value) || 0;
 
+            // Auto-calculate maintenance as 10% of build cost
+            document.getElementById('ai-maintenance').value = Math.round(aiBuild * 0.1);
+            const calculatedMaintenance = aiBuild * 0.1;
+
             // Calculate costs
             const totalEmployeeCost = salary * (1 + benefits/100) + training + recruitment;
-            const screeningCost = totalEmployeeCost * (screeningHours / 40);
-            const aiFirstYearCost = aiBuild + (aiMaintenance * 12);
-            const annualSavings = screeningCost - aiFirstYearCost;
-            const monthlyNetSavings = (screeningCost / 12) - aiMaintenance;
+            const aiFirstYearCost = aiBuild + (calculatedMaintenance * 12);
+            const annualSavings = totalEmployeeCost - aiFirstYearCost;
+            const monthlyNetSavings = (totalEmployeeCost / 12) - calculatedMaintenance;
             const paybackMonths = monthlyNetSavings > 0 ? aiBuild / monthlyNetSavings : 999;
             const roi = aiFirstYearCost > 0 ? (annualSavings / aiFirstYearCost) * 100 : 0;
             
             // 3-year calculations
-            const employee3Year = screeningCost * 3;
-            const ai3Year = aiBuild + (aiMaintenance * 36);
+            const employee3Year = totalEmployeeCost * 3;
+            const ai3Year = aiBuild + (calculatedMaintenance * 36);
 
             // Update display
             document.getElementById('total-employee-cost').innerHTML = `💰 $${totalEmployeeCost.toLocaleString()}`;
-            document.getElementById('screening-cost').innerHTML = `📋 $${Math.round(screeningCost).toLocaleString()}`;
             document.getElementById('ai-cost').innerHTML = `🤖 $${aiFirstYearCost.toLocaleString()}`;
             document.getElementById('annual-savings').textContent = `$${Math.round(annualSavings).toLocaleString()}`;
             document.getElementById('roi-percentage').textContent = `ROI: ${Math.round(roi)}%`;
@@ -445,10 +443,11 @@
             document.getElementById('employee-3year').textContent = `$${Math.round(employee3Year).toLocaleString()}`;
             document.getElementById('ai-3year').textContent = `$${Math.round(ai3Year).toLocaleString()}`;
 
-            // Update chart bars
+            // Update bar chart heights
             const maxCost = Math.max(employee3Year, ai3Year);
-            const employeeHeight = (employee3Year / maxCost) * 180;
-            const aiHeight = (ai3Year / maxCost) * 180;
+            const maxHeight = 160; // Maximum height for bars
+            const employeeHeight = (employee3Year / maxCost) * maxHeight;
+            const aiHeight = (ai3Year / maxCost) * maxHeight;
             
             document.getElementById('employee-bar').style.height = `${employeeHeight}px`;
             document.getElementById('ai-bar').style.height = `${aiHeight}px`;
