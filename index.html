@@ -76,6 +76,11 @@
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
             transform: translateY(-1px);
         }
+        .input-group input[readonly] {
+            background: #f3f4f6;
+            border-color: #d1d5db;
+            cursor: not-allowed;
+        }
         .estimation-note {
             background: rgba(102, 126, 234, 0.1);
             padding: 15px; border-radius: 10px; border-left: 4px solid #667eea;
@@ -158,8 +163,8 @@
                 <input type="number" id="training" value="3000">
             </div>
             <div class="input-group">
-                <label for="recruitment">Recruitment cost (hiring process) ($)</label>
-                <input type="number" id="recruitment" value="2000">
+                <label for="recruitment">Recruitment cost: ~3% of monthly salary (Hiring process) ($)</label>
+                <input type="number" id="recruitment" value="112.50" readonly>
             </div>
             <div class="input-group">
                 <label for="ai-build">AI Solution Build Cost* ($)</label>
@@ -170,7 +175,7 @@
                 <input type="number" id="ai-maintenance" value="250" readonly>
             </div>
             <div class="estimation-note">
-                *This is an estimation based on the average AI Solution Build Cost. AI Monthly Maintenance is estimated at 10% of the project build cost.
+                *AI Build Cost is customizable based on project scope. AI Monthly Maintenance is automatically calculated at 10% of the build cost. Recruitment cost is automatically calculated as 3% of the recruiter's monthly salary.
             </div>
         </div>
 
@@ -235,15 +240,19 @@
         // Get values
         const salary = parseFloat(document.getElementById('salary').value) || 0;
         const training = parseFloat(document.getElementById('training').value) || 0;
-        const recruitment = parseFloat(document.getElementById('recruitment').value) || 0;
         const aiBuild = parseFloat(document.getElementById('ai-build').value) || 0;
+        
+        // Auto-calculate recruitment cost (3% of monthly salary)
+        const monthlySalary = salary / 12;
+        const recruitmentCost = Math.round((monthlySalary * 0.03) * 100) / 100; // Round to 2 decimal places
+        document.getElementById('recruitment').value = recruitmentCost.toFixed(2);
         
         // Auto-calculate maintenance (10% of build cost)
         const aiMaintenance = Math.round(aiBuild * 0.1);
         document.getElementById('ai-maintenance').value = aiMaintenance;
         
         // Calculations
-        const totalEmployeeCost = salary + training + recruitment;
+        const totalEmployeeCost = salary + training + recruitmentCost;
         const aiFirstYearCost = aiBuild + (aiMaintenance * 12);
         const annualSavings = totalEmployeeCost - aiFirstYearCost;
         const roi = aiFirstYearCost > 0 ? Math.round((annualSavings / aiFirstYearCost) * 100) : 0;
@@ -282,12 +291,21 @@
 
     // Add event listeners when page loads
     window.addEventListener('load', function() {
+        // Set correct default training cost on load
+        const defaultSalary = 45000;
+        const defaultTrainingCost = Math.round((defaultSalary / 12 * 0.5) * 100) / 100;
+        // Only show decimals if needed for training cost
+        if (defaultTrainingCost % 1 === 0) {
+            document.getElementById('training').value = defaultTrainingCost;
+        } else {
+            document.getElementById('training').value = defaultTrainingCost.toFixed(2);
+        }
+        
         updateCalculations();
         
-        // Add listeners to all input fields
+        // Add listeners to input fields that affect calculations
         document.getElementById('salary').addEventListener('input', updateCalculations);
         document.getElementById('training').addEventListener('input', updateCalculations);
-        document.getElementById('recruitment').addEventListener('input', updateCalculations);
         document.getElementById('ai-build').addEventListener('input', updateCalculations);
     });
 </script>
