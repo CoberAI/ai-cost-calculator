@@ -5,19 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee vs AI Cost Calculator</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
-
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -28,23 +22,11 @@
             padding: 40px;
             animation: slideUp 0.8s ease-out;
         }
-
         @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
+        .header { text-align: center; margin-bottom: 40px; }
         .header h1 {
             font-size: 2.5rem;
             font-weight: 700;
@@ -53,26 +35,19 @@
             -webkit-text-fill-color: transparent;
             margin-bottom: 10px;
         }
-
-        .header p {
-            color: #666;
-            font-size: 1.1rem;
-        }
-
+        .header p { color: #666; font-size: 1.1rem; }
         .calculator-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 40px;
             margin-bottom: 40px;
         }
-
         .input-section {
             background: #f8fafc;
             padding: 30px;
             border-radius: 16px;
             border: 1px solid #e2e8f0;
         }
-
         .results-section {
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             padding: 30px;
@@ -81,410 +56,240 @@
             position: relative;
             overflow: hidden;
         }
-
         .results-section::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
             pointer-events: none;
         }
-
-        .section-title {
-            font-size: 1.4rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: #1e293b;
-        }
-
-        .results-section .section-title {
-            color: white;
-            position: relative;
-            z-index: 1;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        .input-group label {
-            display: block;
-            font-weight: 500;
-            color: #374151;
-            margin-bottom: 6px;
-            font-size: 0.9rem;
-        }
-
+        .section-title { font-size: 1.4rem; font-weight: 600; margin-bottom: 20px; color: #1e293b; }
+        .results-section .section-title { color: white; position: relative; z-index: 1; }
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-weight: 500; color: #374151; margin-bottom: 6px; font-size: 0.9rem; }
         .input-group input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            background: white;
+            width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb;
+            border-radius: 8px; font-size: 1rem; transition: all 0.3s ease; background: white;
         }
-
         .input-group input:focus {
-            outline: none;
-            border-color: #667eea;
+            outline: none; border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
             transform: translateY(-1px);
         }
-
         .estimation-note {
             background: rgba(102, 126, 234, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            border-left: 4px solid #667eea;
-            margin-top: 20px;
-            font-size: 0.85rem;
-            color: #475569;
-            line-height: 1.5;
+            padding: 15px; border-radius: 10px; border-left: 4px solid #667eea;
+            margin-top: 20px; font-size: 0.85rem; color: #475569; line-height: 1.5;
         }
-
         .result-card {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            position: relative;
-            z-index: 1;
+            background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px);
+            padding: 20px; border-radius: 12px; margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2); position: relative; z-index: 1;
             transition: transform 0.3s ease;
         }
-
-        .result-card:hover {
-            transform: translateY(-2px);
-        }
-
-        .result-label {
-            font-size: 0.9rem;
-            opacity: 0.9;
-            margin-bottom: 5px;
-        }
-
-        .result-value {
-            font-size: 1.8rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
+        .result-card:hover { transform: translateY(-2px); }
+        .result-label { font-size: 0.9rem; opacity: 0.9; margin-bottom: 5px; }
+        .result-value { font-size: 1.8rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
         .savings-highlight {
             background: linear-gradient(135deg, #10b981, #059669);
-            padding: 25px;
-            border-radius: 16px;
-            text-align: center;
-            margin-top: 20px;
-            position: relative;
-            z-index: 1;
+            padding: 25px; border-radius: 16px; text-align: center;
+            margin-top: 20px; position: relative; z-index: 1;
             animation: pulse 2s infinite;
         }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-        }
-
-        .savings-highlight .big-number {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 5px;
-        }
-
+        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+        .savings-highlight .big-number { font-size: 2.5rem; font-weight: 800; margin-bottom: 5px; }
         .payback-period {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            margin-top: 15px;
-            position: relative;
-            z-index: 1;
+            background: rgba(255, 255, 255, 0.2); padding: 15px; border-radius: 10px;
+            text-align: center; margin-top: 15px; position: relative; z-index: 1;
         }
-
         .chart-container {
-            margin-top: 30px;
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            position: relative;
-            z-index: 1;
+            margin-top: 30px; background: white; padding: 30px 20px 20px 20px; border-radius: 12px; position: relative; z-index: 1;
         }
-
+        .chart-title {
+            color: #374151; margin-bottom: 30px; text-align: center; font-size: 1.1rem; font-weight: 600;
+        }
         .bar-chart {
-            display: flex;
-            align-items: end;
-            gap: 20px;
-            height: 200px;
-            margin: 20px 0;
+            display: flex; justify-content: space-around; align-items: flex-end;
+            gap: 60px; height: 200px; margin: 0; position: relative; padding: 0 20px;
+            margin-bottom: 40px;
         }
-
-        .bar {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .bar-fill {
-            width: 100%;
-            border-radius: 8px 8px 0 0;
+        .bar { display: flex; flex-direction: column; align-items: center; flex: 1; max-width: 200px; }
+        .bar-fill { 
+            width: 100%; 
+            border-radius: 8px 8px 0 0; 
+            transition: all 0.8s ease; 
             position: relative;
-            transition: all 0.8s ease;
             min-height: 20px;
         }
-
-        .employee-bar {
-            background: linear-gradient(180deg, #ef4444, #dc2626);
-        }
-
-        .ai-bar {
-            background: linear-gradient(180deg, #10b981, #059669);
-        }
-
-        .bar-label {
-            font-weight: 600;
-            color: #374151;
-            text-align: center;
-        }
-
-        .bar-value {
-            font-size: 0.9rem;
-            color: #6b7280;
-            margin-top: 5px;
-        }
-
-        .cta-section {
-            text-align: center;
-            margin-top: 40px;
-            padding: 30px;
-            background: linear-gradient(135deg, #1e293b, #334155);
-            border-radius: 16px;
-            color: white;
-        }
-
+        .employee-bar { background: linear-gradient(180deg, #ef4444, #dc2626); }
+        .ai-bar { background: linear-gradient(180deg, #10b981, #059669); }
+        .bar-label { font-weight: 600; color: #374151; text-align: center; margin-top: 15px; font-size: 0.95rem; }
+        .bar-value { font-size: 0.9rem; color: #6b7280; margin-top: 8px; font-weight: 500; }
+        .cta-section { text-align: center; margin-top: 40px; padding: 30px; background: linear-gradient(135deg, #1e293b, #334155); border-radius: 16px; color: white; }
         .cta-button {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 50px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 20px;
+            background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 15px 30px;
+            border: none; border-radius: 50px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; margin-top: 20px;
         }
-
-        .cta-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3);
-        }
-
+        .cta-button:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3); }
         @media (max-width: 768px) {
-            .calculator-grid {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
-            
-            .container {
-                padding: 20px;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
-            }
-        }
-
-        .icon {
-            width: 20px;
-            height: 20px;
-            opacity: 0.8;
+            .calculator-grid { grid-template-columns: 1fr; gap: 30px; }
+            .container { padding: 20px; }
+            .header h1 { font-size: 2rem; }
+            .bar-chart { gap: 30px; padding: 0 10px; height: 150px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Employee vs AI Cost Calculator</h1>
-            <p>See how much you could save by automating candidate screening and management</p>
-        </div>
+<div class="container">
+    <div class="header">
+        <h1>Employee vs AI Cost Calculator</h1>
+        <p>See how much you could save by automating candidate screening and management</p>
+    </div>
 
-        <div class="calculator-grid">
-            <div class="input-section">
-                <h3 class="section-title">📊 Enter Your Current Costs</h3>
-                
-                <div class="input-group">
-                    <label for="salary">Recruiter Annual Salary ($)</label>
-                    <input type="number" id="salary" value="45000" oninput="calculate()">
-                </div>
-
-                <div class="input-group">
-                    <label for="training">Training cost for new recruiter ($)</label>
-                    <input type="number" id="training" value="3000" oninput="calculate()">
-                </div>
-
-                <div class="input-group">
-                    <label for="recruitment">Recruitment cost (hiring process) ($)</label>
-                    <input type="number" id="recruitment" value="2000" oninput="calculate()">
-                </div>
-
-                <div class="input-group">
-                    <label for="ai-build">AI Solution Build Cost* ($)</label>
-                    <input type="number" id="ai-build" value="2500" oninput="calculate()">
-                </div>
-
-                <div class="input-group">
-                    <label for="ai-maintenance">AI Monthly Maintenance* ($)</label>
-                    <input type="number" id="ai-maintenance" value="200" oninput="calculate()">
-                </div>
-
-                <div class="estimation-note">
-                    *This is an estimation based on the average AI Solution Build Cost. AI Monthly Maintenance is estimated at 10% of the project build cost.
-                </div>
+    <div class="calculator-grid">
+        <div class="input-section">
+            <h3 class="section-title">📊 Enter Your Current Costs</h3>
+            <div class="input-group">
+                <label for="salary">Recruiter Annual Salary ($)</label>
+                <input type="number" id="salary" value="45000">
             </div>
-
-            <div class="results-section">
-                <h3 class="section-title">🚀 Your Savings Potential</h3>
-                
-                <div class="result-card">
-                    <div class="result-label">Total Employee Cost (Annual)</div>
-                    <div class="result-value" id="total-employee-cost">
-                        💰 $58,500
-                    </div>
-                </div>
-
-                <div class="result-card">
-                    <div class="result-label">AI Solution (First Year)</div>
-                    <div class="result-value" id="ai-cost">
-                        🤖 $4,900
-                    </div>
-                </div>
-
-                <div class="savings-highlight">
-                    <div class="result-label">Annual Savings</div>
-                    <div class="big-number" id="annual-savings">$31,662</div>
-                    <div id="roi-percentage">ROI: 646%</div>
-                </div>
-
-                <div class="payback-period">
-                    <strong>Payback Period: <span id="payback-months">0.9</span> months</strong>
-                </div>
-
-                <div class="chart-container">
-                    <h4 style="color: #374151; margin-bottom: 15px; text-align: center;">3-Year Cost Comparison</h4>
-                    <div class="bar-chart">
-                        <div class="bar">
-                            <div class="bar-fill employee-bar" id="employee-bar" style="height: 150px;"></div>
-                            <div class="bar-label">Employee Cost</div>
-                            <div class="bar-value" id="employee-3year">$109,687</div>
-                        </div>
-                        <div class="bar">
-                            <div class="bar-fill ai-bar" id="ai-bar" style="height: 15px;"></div>
-                            <div class="bar-label">AI Solution</div>
-                            <div class="bar-value" id="ai-3year">$9,700</div>
-                        </div>
-                    </div>
-                </div>
+            <div class="input-group">
+                <label for="training">Training cost for new recruiter ($)</label>
+                <input type="number" id="training" value="3000">
+            </div>
+            <div class="input-group">
+                <label for="recruitment">Recruitment cost (hiring process) ($)</label>
+                <input type="number" id="recruitment" value="2000">
+            </div>
+            <div class="input-group">
+                <label for="ai-build">AI Solution Build Cost* ($)</label>
+                <input type="number" id="ai-build" value="2500">
+            </div>
+            <div class="input-group">
+                <label for="ai-maintenance">AI Monthly Maintenance* ($)</label>
+                <input type="number" id="ai-maintenance" value="250" readonly>
+            </div>
+            <div class="estimation-note">
+                *This is an estimation based on the average AI Solution Build Cost. AI Monthly Maintenance is estimated at 10% of the project build cost.
             </div>
         </div>
 
-        <div class="cta-section">
-            <h3>Ready to Implement Your AI Solution?</h3>
-            <p>See how we can build your custom candidate screening AI in just 2 weeks</p>
-            <button class="cta-button" onclick="showContact()">Get Your Custom Quote →</button>
-            <div id="contact-info" style="margin-top: 20px; display: none;">
-                <p>📧 Email: CoberAI@hotmail.com</p>
-                <p>📅 Book a free 15-min consultation call</p>
+        <div class="results-section">
+            <h3 class="section-title">🚀 Your Savings Potential</h3>
+            
+            <div class="result-card">
+                <div class="result-label">Total Employee Cost (Annual)</div>
+                <div class="result-value" id="total-employee-cost">
+                    💰 $50,000
+                </div>
+            </div>
+
+            <div class="result-card">
+                <div class="result-label">AI Solution (First Year)</div>
+                <div class="result-value" id="ai-cost">
+                    🤖 $5,500
+                </div>
+            </div>
+
+            <div class="savings-highlight">
+                <div class="result-label">Annual Savings</div>
+                <div class="big-number" id="annual-savings">$44,500</div>
+                <div id="roi-percentage">ROI: 809%</div>
+            </div>
+
+            <div class="payback-period">
+                <strong>Payback Period: <span id="payback-months">0.7</span> months</strong>
+            </div>
+
+            <div class="chart-container">
+                <h4 class="chart-title">3-Year Cost Comparison</h4>
+                <div class="bar-chart">
+                    <div class="bar">
+                        <div class="bar-fill employee-bar" id="employee-bar" style="height: 28px;"></div>
+                        <div class="bar-label">Employee Cost</div>
+                        <div class="bar-value" id="employee-3year">$150,000</div>
+                    </div>
+                    <div class="bar">
+                        <div class="bar-fill ai-bar" id="ai-bar" style="height: 7px;"></div>
+                        <div class="bar-label">AI Solution</div>
+                        <div class="bar-value" id="ai-3year">$11,500</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <script>
-        function calculate() {
-            // Get input values
-            const salary = parseFloat(document.getElementById('salary').value) || 0;
-            const training = parseFloat(document.getElementById('training').value) || 0;
-            const recruitment = parseFloat(document.getElementById('recruitment').value) || 0;
-            const aiBuild = parseFloat(document.getElementById('ai-build').value) || 0;
-            const aiMaintenance = parseFloat(document.getElementById('ai-maintenance').value) || 0;
+    <div class="cta-section">
+        <h3>Ready to Implement Your AI Solution?</h3>
+        <p>See how we can build your custom candidate screening AI in just 2 weeks</p>
+        <button class="cta-button" onclick="showContact()">Get Your Custom Quote →</button>
+        <div id="contact-info" style="margin-top: 20px; display: none;">
+            <p>📧 Email: your-business@email.com</p>
+            <p>📅 Book a free 15-min consultation call</p>
+        </div>
+    </div>
+</div>
 
-            // Auto-calculate maintenance as 10% of build cost
-            document.getElementById('ai-maintenance').value = Math.round(aiBuild * 0.1);
-            const calculatedMaintenance = aiBuild * 0.1;
-
-            // Calculate costs
-            const totalEmployeeCost = salary * (1 + benefits/100) + training + recruitment;
-            const aiFirstYearCost = aiBuild + (calculatedMaintenance * 12);
-            const annualSavings = totalEmployeeCost - aiFirstYearCost;
-            const monthlyNetSavings = (totalEmployeeCost / 12) - calculatedMaintenance;
-            const paybackMonths = monthlyNetSavings > 0 ? aiBuild / monthlyNetSavings : 999;
-            const roi = aiFirstYearCost > 0 ? (annualSavings / aiFirstYearCost) * 100 : 0;
+<script>
+    function updateCalculations() {
+        // Get values
+        const salary = parseFloat(document.getElementById('salary').value) || 0;
+        const training = parseFloat(document.getElementById('training').value) || 0;
+        const recruitment = parseFloat(document.getElementById('recruitment').value) || 0;
+        const aiBuild = parseFloat(document.getElementById('ai-build').value) || 0;
+        
+        // Auto-calculate maintenance (10% of build cost)
+        const aiMaintenance = Math.round(aiBuild * 0.1);
+        document.getElementById('ai-maintenance').value = aiMaintenance;
+        
+        // Calculations
+        const totalEmployeeCost = salary + training + recruitment;
+        const aiFirstYearCost = aiBuild + (aiMaintenance * 12);
+        const annualSavings = totalEmployeeCost - aiFirstYearCost;
+        const roi = aiFirstYearCost > 0 ? Math.round((annualSavings / aiFirstYearCost) * 100) : 0;
+        const paybackMonths = aiMaintenance > 0 ? (aiBuild / ((totalEmployeeCost / 12) - aiMaintenance)).toFixed(1) : 0;
+        
+        // 3-year costs
+        const employee3Year = totalEmployeeCost * 3;
+        const ai3Year = aiBuild + (aiMaintenance * 36);
+        
+        // Update display
+        document.getElementById('total-employee-cost').innerHTML = `💰 $${totalEmployeeCost.toLocaleString()}`;
+        document.getElementById('ai-cost').innerHTML = `🤖 $${aiFirstYearCost.toLocaleString()}`;
+        document.getElementById('annual-savings').textContent = `$${annualSavings.toLocaleString()}`;
+        document.getElementById('roi-percentage').textContent = `ROI: ${roi}%`;
+        document.getElementById('payback-months').textContent = paybackMonths;
+        document.getElementById('employee-3year').textContent = `$${employee3Year.toLocaleString()}`;
+        document.getElementById('ai-3year').textContent = `$${ai3Year.toLocaleString()}`;
+        
+        // Calculate proportional bar heights
+        const maxHeight = 180; // Maximum bar height
+        const maxValue = Math.max(employee3Year, ai3Year);
+        
+        if (maxValue > 0) {
+            const employeeHeight = Math.max((employee3Year / maxValue) * maxHeight, 20); // Min 20px
+            const aiHeight = Math.max((ai3Year / maxValue) * maxHeight, 20); // Min 20px
             
-            // 3-year calculations
-            const employee3Year = totalEmployeeCost * 3;
-            const ai3Year = aiBuild + (calculatedMaintenance * 36);
-
-            // Update display
-            document.getElementById('total-employee-cost').innerHTML = `💰 $${totalEmployeeCost.toLocaleString()}`;
-            document.getElementById('ai-cost').innerHTML = `🤖 $${aiFirstYearCost.toLocaleString()}`;
-            document.getElementById('annual-savings').textContent = `$${Math.round(annualSavings).toLocaleString()}`;
-            document.getElementById('roi-percentage').textContent = `ROI: ${Math.round(roi)}%`;
-            document.getElementById('payback-months').textContent = paybackMonths < 999 ? paybackMonths.toFixed(1) : '∞';
-            
-            // Update 3-year comparison
-            document.getElementById('employee-3year').textContent = `$${Math.round(employee3Year).toLocaleString()}`;
-            document.getElementById('ai-3year').textContent = `$${Math.round(ai3Year).toLocaleString()}`;
-
-            // Update bar chart heights
-            const maxCost = Math.max(employee3Year, ai3Year);
-            const maxHeight = 160; // Maximum height for bars
-            const employeeHeight = (employee3Year / maxCost) * maxHeight;
-            const aiHeight = (ai3Year / maxCost) * maxHeight;
-            
-            document.getElementById('employee-bar').style.height = `${employeeHeight}px`;
-            document.getElementById('ai-bar').style.height = `${aiHeight}px`;
-
-            // Color coding for savings
-            const savingsElement = document.getElementById('annual-savings');
-            if (annualSavings > 0) {
-                savingsElement.style.color = '#ffffff';
-            } else {
-                savingsElement.style.color = '#fecaca';
-            }
+            document.getElementById('employee-bar').style.height = employeeHeight + 'px';
+            document.getElementById('ai-bar').style.height = aiHeight + 'px';
         }
+    }
 
-        function showContact() {
-            const contactInfo = document.getElementById('contact-info');
-            contactInfo.style.display = contactInfo.style.display === 'none' ? 'block' : 'none';
-        }
+    function showContact() {
+        const contactInfo = document.getElementById('contact-info');
+        contactInfo.style.display = contactInfo.style.display === 'none' ? 'block' : 'none';
+    }
 
-        // Initialize calculation on page load
-        window.onload = function() {
-            calculate();
-        };
-
-        // Add some interactive animations
-        document.addEventListener('DOMContentLoaded', function() {
-            const inputs = document.querySelectorAll('input');
-            inputs.forEach(input => {
-                input.addEventListener('focus', function() {
-                    this.parentElement.style.transform = 'scale(1.02)';
-                    this.parentElement.style.transition = 'transform 0.2s ease';
-                });
-                
-                input.addEventListener('blur', function() {
-                    this.parentElement.style.transform = 'scale(1)';
-                });
-            });
-        });
-    </script>
+    // Add event listeners when page loads
+    window.addEventListener('load', function() {
+        updateCalculations();
+        
+        // Add listeners to all input fields
+        document.getElementById('salary').addEventListener('input', updateCalculations);
+        document.getElementById('training').addEventListener('input', updateCalculations);
+        document.getElementById('recruitment').addEventListener('input', updateCalculations);
+        document.getElementById('ai-build').addEventListener('input', updateCalculations);
+    });
+</script>
 </body>
 </html>
